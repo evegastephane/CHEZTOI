@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 
 const C = {
   bg:      "#FAFAFA",
@@ -48,6 +48,7 @@ const POPULAIRES = VILLES.slice(0, 5);
 
 export default function Location() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ from?: string }>();
   const inputRef = useRef<TextInput>(null);
   const [query, setQuery] = useState("");
 
@@ -60,10 +61,12 @@ export default function Location() {
     : null;
 
   const handleSelect = (ville: (typeof VILLES)[0]) => {
-    router.navigate({
-      pathname: "/(tabs)/index",
-      params: { lieu: `${ville.nom}, ${ville.pays}` },
-    });
+    const lieu = `${ville.nom}, ${ville.pays}`;
+    if (params.from === "resultats") {
+      router.navigate({ pathname: "/resultats", params: { lieu } });
+    } else {
+      router.navigate({ pathname: "/", params: { lieu } });
+    }
   };
 
   return (
