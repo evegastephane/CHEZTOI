@@ -252,6 +252,7 @@ export default function BienDetail() {
           style={[s.cta, !bien.disponible && s.ctaOff]}
           disabled={!bien.disponible}
           activeOpacity={0.85}
+          onPress={() => router.push({ pathname: "/reservation", params: { bienId: bien.id } })}
         >
           <Text style={s.ctaTxt}>{bien.disponible ? "Réserver" : "Indisponible"}</Text>
         </TouchableOpacity>

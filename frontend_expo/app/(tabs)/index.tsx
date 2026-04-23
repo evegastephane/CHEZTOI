@@ -323,7 +323,7 @@ export default function Accueil() {
             </>
           ) : (
             /* ── Zones normales ─────────────────────────────────── */
-            <>
+        <>
               <TouchableOpacity style={[sk.zone, lieu && sk.zoneActive]} activeOpacity={0.75} onPress={() => setShowLieuPicker(true)}>
                 <View style={[sk.zoneIcon, !!lieu && sk.zoneIconActive]}>
                   <Ionicons name="location-outline" size={16} color={lieu ? C.accent : C.mutedFg} />
