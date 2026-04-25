@@ -8,25 +8,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useSignUp } from "@clerk/expo";
 import { useRouter } from "expo-router";
-
-const C = {
-  bg:        "#FAFAFA",
-  card:      "#FFFFFF",
-  border:    "#E4E4E7",
-  muted:     "#F4F4F5",
-  mutedFg:   "#71717A",
-  fg:        "#18181B",
-  fgSub:     "#3F3F46",
-  primary:   "#18181B",
-  primaryFg: "#FAFAFA",
-  accent:    "#208AEF",
-  red:       "#EF4444",
-  r:         10,
-};
+import { usePostHog } from "posthog-react-native";
+import { C } from "@/constants/colors";
 
 export default function SignUp() {
   const { signUp, setActive, isLoaded } = useSignUp();
   const router = useRouter();
+  const posthog = usePostHog();
 
   const [etape,    setEtape]    = useState<"infos" | "verification">("infos");
   const [prenom,   setPrenom]   = useState("");
@@ -39,7 +27,8 @@ export default function SignUp() {
   const [erreur,   setErreur]   = useState<string | null>(null);
 
   const handleSignUp = async () => {
-    if (!isLoaded || !signUp) return;
+    if (!isLoaded) { setErreur("Clerk se charge… Réessayez."); return; }
+    if (!signUp)   { setErreur("Erreur d'initialisation. Relancez l'application."); return; }
     setLoading(true);
     setErreur(null);
     try {
@@ -56,6 +45,7 @@ export default function SignUp() {
         ?? e.errors?.[0]?.message
         ?? e.message
         ?? "Une erreur est survenue.";
+      posthog?.capture("user_signup_failed", { error: msg, etape: "creation" });
       setErreur(msg);
     } finally {
       setLoading(false);
@@ -63,13 +53,14 @@ export default function SignUp() {
   };
 
   const handleVerification = async () => {
-    if (!isLoaded || !signUp) return;
+    if (!isLoaded || !signUp) { setErreur("Erreur d'initialisation. Relancez l'application."); return; }
     setLoading(true);
     setErreur(null);
     try {
       const result = await signUp.attemptEmailAddressVerification({ code });
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
+        posthog?.capture("user_signed_up", { method: "email" });
         router.replace("/");
       }
     } catch (e: any) {
@@ -77,6 +68,7 @@ export default function SignUp() {
         ?? e.errors?.[0]?.message
         ?? e.message
         ?? "Code invalide.";
+      posthog?.capture("user_signup_failed", { error: msg, etape: "verification" });
       setErreur(msg);
     } finally {
       setLoading(false);
@@ -176,9 +168,9 @@ export default function SignUp() {
               </View>
 
               <TouchableOpacity
-                style={[s.btn, loading && s.btnLoading]}
+                style={[s.btn, (loading || !email || !password) && s.btnLoading]}
                 onPress={handleSignUp}
-                disabled={!isLoaded || loading || !email || !password}
+                disabled={loading || !email || !password}
                 activeOpacity={0.85}
               >
                 {loading

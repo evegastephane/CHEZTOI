@@ -8,17 +8,7 @@ import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { convStore, type Conversation } from "@/data/conversations";
 
-const C = {
-  bg:      "#FAFAFA",
-  card:    "#FFFFFF",
-  border:  "#E4E4E7",
-  muted:   "#F4F4F5",
-  mutedFg: "#71717A",
-  fg:      "#18181B",
-  accent:  "#208AEF",
-  accentBg:  "#EFF6FF",
-  accentBdr: "#BFDBFE",
-};
+import { C } from "@/constants/colors";
 
 function fmtDate(date: Date): string {
   const now  = new Date();

@@ -8,25 +8,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useSignIn } from "@clerk/expo";
 import { useRouter } from "expo-router";
-
-const C = {
-  bg:        "#FAFAFA",
-  card:      "#FFFFFF",
-  border:    "#E4E4E7",
-  muted:     "#F4F4F5",
-  mutedFg:   "#71717A",
-  fg:        "#18181B",
-  fgSub:     "#3F3F46",
-  primary:   "#18181B",
-  primaryFg: "#FAFAFA",
-  accent:    "#208AEF",
-  red:       "#EF4444",
-  r:         10,
-};
+import { usePostHog } from "posthog-react-native";
+import { C } from "@/constants/colors";
 
 export default function SignIn() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
+  const posthog = usePostHog();
 
   const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
@@ -35,13 +23,21 @@ export default function SignIn() {
   const [erreur,   setErreur]   = useState<string | null>(null);
 
   const handleSignIn = async () => {
-    if (!isLoaded || !signIn) return;
+    if (!isLoaded) {
+      setErreur("Clerk se charge… Réessayez dans un instant.");
+      return;
+    }
+    if (!signIn) {
+      setErreur("Erreur d'initialisation. Relancez l'application.");
+      return;
+    }
     setLoading(true);
     setErreur(null);
     try {
       const result = await signIn.create({ identifier: email, password });
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
+        posthog?.capture("user_signed_in", { method: "email" });
         router.replace("/");
       }
     } catch (e: any) {
@@ -49,6 +45,7 @@ export default function SignIn() {
         ?? e.errors?.[0]?.message
         ?? e.message
         ?? "Identifiants incorrects.";
+      posthog?.capture("user_signin_failed", { error: msg });
       setErreur(msg);
     } finally {
       setLoading(false);
@@ -119,9 +116,9 @@ export default function SignIn() {
           </View>
 
           <TouchableOpacity
-            style={[s.btn, loading && s.btnLoading]}
+            style={[s.btn, (loading || !email || !password) && s.btnLoading]}
             onPress={handleSignIn}
-            disabled={!isLoaded || loading || !email || !password}
+            disabled={loading || !email || !password}
             activeOpacity={0.85}
           >
             {loading

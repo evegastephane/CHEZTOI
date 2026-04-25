@@ -5,11 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { getBienById } from "@/data/db";
 
-const C = {
-  bg: "#FAFAFA", card: "#FFFFFF", border: "#E4E4E7", muted: "#F4F4F5",
-  mutedFg: "#71717A", fg: "#18181B", fgSub: "#3F3F46",
-  accent: "#208AEF", green: "#22C55E", r: 10,
-};
+import { C } from "@/constants/colors";
 
 const MOYEN_LABELS: Record<string, string> = {
   carte:    "Carte bancaire",

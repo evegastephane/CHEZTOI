@@ -13,16 +13,16 @@ import { ReactNode } from "react";
 const SCREEN_H = Dimensions.get("window").height;
 
 export const C = {
-  bg:        "#FAFAFA",
+  bg:        "#FFFFFF",
   card:      "#FFFFFF",
-  border:    "#E4E4E7",
-  muted:     "#F4F4F5",
-  mutedFg:   "#71717A",
-  fg:        "#18181B",
-  fgSub:     "#3F3F46",
-  primary:   "#18181B",
-  primaryFg: "#FAFAFA",
-  accent:    "#208AEF",
+  border:    "#A3B18A",
+  muted:     "#EAE8E3",
+  mutedFg:   "#588157",
+  fg:        "#344E41",
+  fgSub:     "#3A5A40",
+  primary:   "#3A5A40",
+  primaryFg: "#FFFFFF",
+  accent:    "#588157",
   r:         8,
 };
 

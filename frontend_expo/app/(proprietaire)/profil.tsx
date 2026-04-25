@@ -34,7 +34,7 @@ const ROLES: { id: Role; label: string; icon: keyof typeof Ionicons.glyphMap; de
   },
 ];
 
-export default function Profil() {
+export default function ProfilProprietaire() {
   const { user, isLoaded } = useUser();
   const { signOut }        = useClerk();
   const router             = useRouter();
@@ -43,7 +43,7 @@ export default function Profil() {
   const [loading,     setLoading]     = useState(false);
   const [roleLoading, setRoleLoading] = useState(false);
 
-  const roleActuel = ((user?.unsafeMetadata?.role as Role) ?? "client");
+  const roleActuel = ((user?.unsafeMetadata?.role as Role) ?? "proprietaire");
 
   const handleSignOut = async () => {
     setLoading(true);
@@ -62,8 +62,8 @@ export default function Profil() {
     try {
       await user?.update({ unsafeMetadata: { ...user.unsafeMetadata, role } });
       posthog?.capture("role_changed", { role });
-      if (role === "proprietaire") {
-        router.replace("/(proprietaire)/mes-proprietes");
+      if (role === "client") {
+        router.replace("/(tabs)");
       }
       // agent space à venir
     } catch {
@@ -76,17 +76,15 @@ export default function Profil() {
   const initiales = [user?.firstName?.[0], user?.lastName?.[0]]
     .filter(Boolean).join("").toUpperCase() || "?";
 
-  const nomComplet  = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Utilisateur";
-  const email       = user?.primaryEmailAddress?.emailAddress ?? "";
-  const telephone   = user?.primaryPhoneNumber?.phoneNumber   ?? "";
-  const roleInfo    = ROLES.find((r) => r.id === roleActuel) ?? ROLES[0];
+  const nomComplet = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Utilisateur";
+  const email      = user?.primaryEmailAddress?.emailAddress ?? "";
+  const telephone  = user?.primaryPhoneNumber?.phoneNumber   ?? "";
+  const roleInfo   = ROLES.find((r) => r.id === roleActuel) ?? ROLES[1];
 
   if (!isLoaded) {
     return (
       <SafeAreaView style={s.root}>
-        <View style={s.center}>
-          <ActivityIndicator color={C.accent} />
-        </View>
+        <View style={s.center}><ActivityIndicator color={C.accent} /></View>
       </SafeAreaView>
     );
   }
@@ -200,14 +198,10 @@ export default function Profil() {
   );
 }
 
-// ─── Ligne d'information ──────────────────────────────────────────────────────
-
 function InfoRow({ icon, label, valeur }: { icon: keyof typeof Ionicons.glyphMap; label: string; valeur: string }) {
   return (
     <View style={s.row}>
-      <View style={s.rowIcon}>
-        <Ionicons name={icon} size={16} color={C.mutedFg} />
-      </View>
+      <View style={s.rowIcon}><Ionicons name={icon} size={16} color={C.mutedFg} /></View>
       <View style={s.rowBody}>
         <Text style={s.rowLabel}>{label}</Text>
         <Text style={s.rowValeur} numberOfLines={1}>{valeur}</Text>
@@ -215,8 +209,6 @@ function InfoRow({ icon, label, valeur }: { icon: keyof typeof Ionicons.glyphMap
     </View>
   );
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const s = StyleSheet.create({
   root:   { flex: 1, backgroundColor: C.bg },
@@ -229,42 +221,31 @@ const s = StyleSheet.create({
   },
   titre: { fontSize: 20, fontWeight: "700", color: C.fg, letterSpacing: -0.3 },
 
-  scroll: { padding: 20, gap: 20, paddingBottom: 40 },
+  scroll: { padding: 20, gap: 20, paddingBottom: 120 },
 
-  // Hero
   heroCard: {
     backgroundColor: C.card, borderRadius: C.r, borderWidth: 1, borderColor: C.border,
     alignItems: "center", padding: 28, gap: 6,
   },
-  avatar: {
-    width: 72, height: 72, borderRadius: 36,
-    backgroundColor: C.accent, alignItems: "center", justifyContent: "center", marginBottom: 4,
-  },
+  avatar:       { width: 72, height: 72, borderRadius: 36, backgroundColor: C.accent, alignItems: "center", justifyContent: "center", marginBottom: 4 },
   avatarTxt:    { fontSize: 26, fontWeight: "700", color: "#FFF" },
   nomTxt:       { fontSize: 18, fontWeight: "700", color: C.fg, letterSpacing: -0.3 },
   emailTxt:     { fontSize: 13, color: C.mutedFg },
-  roleBadge:    {
-    flexDirection: "row", alignItems: "center", gap: 5,
-    backgroundColor: C.accentBg, borderRadius: 20, borderWidth: 1, borderColor: C.accentBdr,
-    paddingHorizontal: 12, paddingVertical: 5, marginTop: 4,
-  },
+  roleBadge:    { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: C.accentBg, borderRadius: 20, borderWidth: 1, borderColor: C.accentBdr, paddingHorizontal: 12, paddingVertical: 5, marginTop: 4 },
   roleBadgeTxt: { fontSize: 12, fontWeight: "600", color: C.accent },
 
-  // Sections
   section:      { gap: 10 },
   sectionTitre: { fontSize: 12, fontWeight: "600", color: C.mutedFg, textTransform: "uppercase", letterSpacing: 0.5 },
 
   card: { backgroundColor: C.card, borderRadius: C.r, borderWidth: 1, borderColor: C.border, overflow: "hidden" },
   sep:  { height: StyleSheet.hairlineWidth, backgroundColor: C.border, marginLeft: 52 },
 
-  // InfoRow
   row:      { flexDirection: "row", alignItems: "center", paddingVertical: 13, paddingHorizontal: 16, gap: 12 },
   rowIcon:  { width: 24, alignItems: "center" },
   rowBody:  { flex: 1 },
   rowLabel: { fontSize: 11, color: C.mutedFg, marginBottom: 2 },
   rowValeur:{ fontSize: 14, color: C.fg, fontWeight: "500" },
 
-  // Rôle
   roleRow:           { flexDirection: "row", alignItems: "center", paddingVertical: 14, paddingHorizontal: 16, gap: 14 },
   roleIconWrap:      { width: 36, height: 36, borderRadius: 10, backgroundColor: C.muted, alignItems: "center", justifyContent: "center" },
   roleIconWrapActif: { backgroundColor: C.primary },
@@ -276,12 +257,7 @@ const s = StyleSheet.create({
   roleLoadingRow:    { flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center" },
   roleLoadingTxt:    { fontSize: 12, color: C.mutedFg },
 
-  // Déconnexion
-  logoutBtn: {
-    flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10,
-    backgroundColor: C.card, borderRadius: C.r, borderWidth: 1, borderColor: "#FECACA",
-    paddingVertical: 15,
-  },
+  logoutBtn:         { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, backgroundColor: C.card, borderRadius: C.r, borderWidth: 1, borderColor: "#FECACA", paddingVertical: 15 },
   logoutBtnDisabled: { opacity: 0.6 },
   logoutTxt:         { fontSize: 15, fontWeight: "600", color: C.red },
 });

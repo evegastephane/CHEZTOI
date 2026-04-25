@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { C } from "@/constants/colors";
 
 export default function Favori() {
   return (
@@ -15,9 +16,9 @@ export default function Favori() {
 }
 
 const s = StyleSheet.create({
-  root:   { flex: 1, backgroundColor: "#FAFAFA" },
-  header: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: "#E4E4E7", backgroundColor: "#FFFFFF" },
-  titre:  { fontSize: 20, fontWeight: "700", color: "#18181B", letterSpacing: -0.3 },
+  root:   { flex: 1, backgroundColor: C.bg },
+  header: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border, backgroundColor: C.card },
+  titre:  { fontSize: 20, fontWeight: "700", color: C.fg, letterSpacing: -0.3 },
   body:   { flex: 1, alignItems: "center", justifyContent: "center" },
-  vide:   { fontSize: 14, color: "#71717A" },
+  vide:   { fontSize: 14, color: C.mutedFg },
 });

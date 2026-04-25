@@ -30,4 +30,8 @@ export const convStore = {
   obtenir(id: string): Conversation | undefined {
     return _store.find((c) => c.id === id);
   },
+  supprimer(id: string): void {
+    const i = _store.findIndex((c) => c.id === id);
+    if (i >= 0) _store.splice(i, 1);
+  },
 };

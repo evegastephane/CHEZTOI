@@ -5,12 +5,10 @@ import { BlurView } from "expo-blur";
 import { C } from "@/constants/colors";
 
 function TabBarBackground() {
-  return (
-    <BlurView tint="systemChromeMaterial" intensity={80} style={StyleSheet.absoluteFill} />
-  );
+  return <BlurView tint="systemChromeMaterial" intensity={80} style={StyleSheet.absoluteFill} />;
 }
 
-export default function TabsLayout() {
+export default function ProprietaireLayout() {
   const isIOS = Platform.OS === "ios";
   const router = useRouter();
 
@@ -30,17 +28,17 @@ export default function TabsLayout() {
         }}
       >
         <Tabs.Screen
-          name="index"
+          name="mes-proprietes"
           options={{
-            title: "Accueil",
+            title: "Mes biens",
             tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
           }}
         />
         <Tabs.Screen
-          name="favori"
+          name="revenus"
           options={{
-            title: "Favoris",
-            tabBarIcon: ({ color, size }) => <Ionicons name="heart" size={size} color={color} />,
+            title: "Revenus",
+            tabBarIcon: ({ color, size }) => <Ionicons name="cash" size={size} color={color} />,
           }}
         />
         <Tabs.Screen
@@ -59,13 +57,8 @@ export default function TabsLayout() {
         />
       </Tabs>
 
-      {/* Bouton flottant IA */}
-      <TouchableOpacity
-        style={s.fab}
-        onPress={() => router.push("/ai")}
-        activeOpacity={0.85}
-      >
-        <Ionicons name="sparkles" size={22} color="#FFFFFF" />
+      <TouchableOpacity style={s.fab} onPress={() => router.push("/ai")} activeOpacity={0.85}>
+        <Ionicons name="sparkles" size={22} color="#FFF" />
       </TouchableOpacity>
     </View>
   );

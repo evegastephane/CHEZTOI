@@ -8,23 +8,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { getBienById, type Bien } from "@/data/db";
+import { C } from "@/constants/colors";
 
 const { width: W } = Dimensions.get("window");
-
-const C = {
-  bg:        "#FAFAFA",
-  card:      "#FFFFFF",
-  border:    "#E4E4E7",
-  muted:     "#F4F4F5",
-  mutedFg:   "#71717A",
-  fg:        "#18181B",
-  fgSub:     "#3F3F46",
-  primary:   "#18181B",
-  primaryFg: "#FAFAFA",
-  accent:    "#208AEF",
-  gold:      "#F59E0B",
-  r:         10,
-};
 
 // ─── Galerie d'images ─────────────────────────────────────────────────────────
 function getImages(bien: Bien): string[] {

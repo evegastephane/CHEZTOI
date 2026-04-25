@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -15,24 +15,29 @@ import { useRouter } from "expo-router";
 import DatesSheet      from "@/components/sheets/DatesSheet";
 import LocatairesSheet from "@/components/sheets/LocatairesSheet";
 import { BIENS_DB, type Bien } from "@/data/db";
+import { biensAPI, premierephoto, type BienAPI } from "@/services/biens";
+import { C } from "@/constants/colors";
 
-// ─── Palette shadcn/ui ────────────────────────────────────────────────────────
-const C = {
-  bg:        "#FAFAFA",
-  card:      "#FFFFFF",
-  border:    "#E4E4E7",
-  muted:     "#F4F4F5",
-  mutedFg:   "#71717A",
-  fg:        "#18181B",
-  fgSub:     "#3F3F46",
-  primary:   "#18181B",
-  primaryFg: "#FAFAFA",
-  accent:    "#208AEF",
-  green:     "#16A34A",
-  r:         8,
-};
+function convertirBienAPI(b: BienAPI): Bien {
+  return {
+    id:          b.ID,
+    nom:         b.Titre,
+    ville:       b.Ville,
+    pays:        b.Pays,
+    type:        b.Type as "Location" | "Résidence",
+    prix:        b.Prix,
+    chambres:    b.NombreChambres,
+    surface:     b.Superficie,
+    note:        b.Note,
+    avis:        b.NombreAvis,
+    description: b.Description,
+    couleur:     C.primary,
+    image:       premierephoto(b),
+    disponible:  b.Statut === "DISPONIBLE",
+  };
+}
 
-// ─── Données ──────────────────────────────────────────────────────────────────
+// ─── Données statiques ────────────────────────────────────────────────────────
 const VILLES = [
   { id: "1", nom: "Douala",     pays: "Cameroun",      nb: 34, bg: "#18181B" },
   { id: "2", nom: "Yaoundé",    pays: "Cameroun",      nb: 21, bg: "#3F3F46" },
@@ -42,7 +47,7 @@ const VILLES = [
   { id: "6", nom: "Marrakech",  pays: "Maroc",         nb: 29, bg: "#3F3F46" },
 ];
 
-const PROPRIETES: Bien[] = BIENS_DB.filter((b) => b.disponible).slice(0, 6);
+const BIENS_DB_AFFICHES: Bien[] = BIENS_DB.filter((b) => b.disponible).slice(0, 6);
 
 const FAQ = [
   {
@@ -191,6 +196,17 @@ type Sheet = "dates" | "locataires" | null;
 
 export default function Accueil() {
   const router = useRouter();
+
+  const [biensAPI_data, setBiensAPIData] = useState<BienAPI[]>([]);
+
+  useEffect(() => {
+    biensAPI.lister().then(setBiensAPIData).catch(() => {});
+  }, []);
+
+  const proprietes: Bien[] = [
+    ...biensAPI_data.map(convertirBienAPI),
+    ...BIENS_DB_AFFICHES.filter((b) => !biensAPI_data.find((a) => a.ID === b.id)),
+  ].slice(0, 8);
 
   const [filtreActif,    setFiltreActif]    = useState<Filtre>("Tout");
   const [sheet,          setSheet]          = useState<Sheet>(null);
@@ -381,7 +397,7 @@ export default function Accueil() {
         {/* ── Section propriétés ──────────────────────────────────────── */}
         <SectionHeader titre="Propriétés à la une" lien="Voir tout" onLien={() => router.push({ pathname: "/resultats", params: { defaut: "1" } })} />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={sk.hScroll}>
-          {PROPRIETES.map((p) => <ProprieteCard key={p.id} p={p} />)}
+          {proprietes.map((p) => <ProprieteCard key={p.id} p={p} />)}
         </ScrollView>
 
         {/* ── Section infos dépliables ────────────────────────────────── */}
